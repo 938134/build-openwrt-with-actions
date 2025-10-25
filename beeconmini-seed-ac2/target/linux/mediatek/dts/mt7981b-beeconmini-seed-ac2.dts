@@ -38,6 +38,35 @@
 			label = "blue:lan2";
 			gpios = <&pio 10 GPIO_ACTIVE_LOW>;
 		};
+				led_lan3: lan3 {
+			label = "blue:lan3";
+			gpios = <&pio 13 GPIO_ACTIVE_LOW>;
+		};
+
+		led_lan4: lan4 {
+			label = "blue:lan4";
+			gpios = <&pio 14 GPIO_ACTIVE_LOW>;
+		};
+
+		led_lan5: lan5 {
+			label = "blue:lan5";
+			gpios = <&pio 15 GPIO_ACTIVE_LOW>;
+		};
+
+		led_lan6: lan6 {
+			label = "blue:lan6";
+			gpios = <&pio 16 GPIO_ACTIVE_LOW>;
+		};
+
+		led_lan7: lan7 {
+			label = "blue:lan7";
+			gpios = <&pio 17 GPIO_ACTIVE_LOW>;
+		};
+
+		led_lan8: lan8 {
+			label = "blue:lan8";
+			gpios = <&pio 18 GPIO_ACTIVE_LOW>;
+		};
 	};
 
 	gpio-keys {

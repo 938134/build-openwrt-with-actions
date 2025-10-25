@@ -53,31 +53,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: "${{ inputs.owner }}/${{ inputs.repo }}"
-          ref: ${{ inputs.branch }}
+          ref: ${{ inputs.branch }}"
           path: source
 
-      - name: ⚙️ 复制基础配置文件
+      - name: ⚙️ 复制 AC2 专用文件
         run: |
-          # 只复制配置文件和脚本，不复制 AC2 文件
-          cp .config source/
-          cp diy.sh source/
-          echo "✅ 基础配置文件复制完成"
+          # 复制设备定义和配置文件
+          cp -rf beeconmini-seed-ac2/* source/
+          cp config.ac2 source/
+          echo "✅ AC2 专用文件复制完成"
 
-      - name: 🛠️ 执行自定义配置（先更新 feeds）
+      - name: 🛠️ 执行自定义配置
         working-directory: source
         run: |
           chmod +x diy.sh
           ./diy.sh
-
-      - name: 🔧 复制 AC2 专用文件（在 feeds 更新后）
-        run: |
-          # 现在安全地复制 AC2 文件覆盖
-          if [ -d "beeconmini-seed-ac2" ]; then
-            cp -rf beeconmini-seed-ac2/* source/
-            echo "✅ AC2 专用文件复制完成"
-          else
-            echo "❌ AC2 目录不存在"
-          fi
 
       - name: 📁 复制 files 大法目录
         if: ${{ inputs.include_files }}
@@ -88,6 +78,17 @@ jobs:
           else
             echo "⚠️  files 目录不存在，跳过"
           fi
+
+      - name: ⚙️ 配置编译选项
+        working-directory: source
+        run: |
+          # 首先生成默认配置
+          make defconfig
+          # 然后追加 AC2 专用配置
+          cat config.ac2 >> .config
+          # 确保配置一致
+          make defconfig
+          echo "✅ 编译配置完成"
 
       - name: 🔍 SSH 调试会话
         if: ${{ inputs.ssh }}

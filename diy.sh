@@ -19,4 +19,13 @@ echo "🎨 配置主题..."
 sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 echo "✅ 主题修改为 argon"
 
+# 确保设备配置正确
+echo "🔧 检查设备配置..."
+if grep -q "CONFIG_TARGET_mediatek_filogic_DEVICE_beeconmini_seed-ac2=y" .config; then
+    echo "✅ AC2 设备配置正确"
+else
+    echo "❌ AC2 设备配置缺失，请检查 config.ac2"
+    exit 1
+fi
+
 echo "🎉 基础配置完成！"
