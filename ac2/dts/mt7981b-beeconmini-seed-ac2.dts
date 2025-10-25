@@ -1,0 +1,215 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/dts-v1/;
+
+#include "mt7981b.dtsi"
+
+/ {
+	model = "BeeconMini SEED AC2";
+	compatible = "beeconmini,seed-ac2", "mediatek,mt7981";
+
+	chosen {
+		bootargs = "console=ttyS0,115200n1 loglevel=8 earlycon=uart8250,mmio32,0x11002000";
+	};
+
+	memory {
+		reg = <0 0x40000000 0 0x10000000>;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_system: system {
+			label = "blue:system";
+			gpios = <&pio 11 GPIO_ACTIVE_LOW>;
+			default-state = "on";
+		};
+
+		led_wan: wan {
+			label = "blue:wan";
+			gpios = <&pio 12 GPIO_ACTIVE_LOW>;
+		};
+
+		led_lan1: lan1 {
+			label = "blue:lan1";
+			gpios = <&pio 9 GPIO_ACTIVE_LOW>;
+		};
+
+		led_lan2: lan2 {
+			label = "blue:lan2";
+			gpios = <&pio 10 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&pio 1 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+
+		wps {
+			label = "wps";
+			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_WPS_BUTTON>;
+		};
+	};
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&watchdog {
+	status = "okay";
+};
+
+&eth {
+	status = "okay";
+
+	gmac0: mac@0 {
+		compatible = "mediatek,eth-mac";
+		reg = <0>;
+		phy-mode = "2500base-x";
+		phy-handle = <&phy0>;
+	};
+
+	gmac1: mac@1 {
+		compatible = "mediatek,eth-mac";
+		reg = <1>;
+		phy-mode = "2500base-x";
+		phy-handle = <&phy1>;
+	};
+};
+
+&mdio_bus {
+	phy0: ethernet-phy@0 {
+		reg = <0>;
+		compatible = "ethernet-phy-ieee802.3-c22";
+	};
+
+	phy1: ethernet-phy@1 {
+		reg = <1>;
+		compatible = "ethernet-phy-ieee802.3-c22";
+	};
+
+	switch: switch@1f {
+		compatible = "realtek,rtl8373";
+		reg = <0x1f>;
+		reset-gpios = <&pio 5 GPIO_ACTIVE_LOW>;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				label = "lan1";
+			};
+
+			port@1 {
+				reg = <1>;
+				label = "lan2";
+			};
+
+			port@2 {
+				reg = <2>;
+				label = "lan3";
+			};
+
+			port@3 {
+				reg = <3>;
+				label = "lan4";
+			};
+
+			port@4 {
+				reg = <4>;
+				label = "lan5";
+			};
+
+			port@5 {
+				reg = <5>;
+				label = "lan6";
+			};
+
+			port@6 {
+				reg = <6>;
+				label = "lan7";
+			};
+
+			port@7 {
+				reg = <7>;
+				label = "lan8";
+			};
+
+			port@8 {
+				reg = <8>;
+				label = "cpu";
+				ethernet = <&gmac0>;
+				phy-mode = "rgmii";
+
+				fixed-link {
+					speed = <2500>;
+					full-duplex;
+					pause;
+				};
+			};
+		};
+	};
+};
+
+&switch {
+	status = "okay";
+};
+
+&spi0 {
+	status = "okay";
+
+	flash@0 {
+		compatible = "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <50000000>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "bl2";
+				reg = <0x00000 0x40000>;
+				read-only;
+			};
+
+			partition@40000 {
+				label = "u-boot-env";
+				reg = <0x40000 0x10000>;
+			};
+
+			factory: partition@50000 {
+				label = "factory";
+				reg = <0x50000 0x40000>;
+				read-only;
+			};
+
+			partition@90000 {
+				label = "fip";
+				reg = <0x90000 0x80000>;
+				read-only;
+			};
+
+			partition@110000 {
+				compatible = "denx,uimage";
+				label = "firmware";
+				reg = <0x110000 0xef0000>;
+			};
+		};
+	};
+};
+
+&wifi {
+	status = "okay";
+
+	mediatek,mtd-eeprom = <&factory 0x0>;
+};
