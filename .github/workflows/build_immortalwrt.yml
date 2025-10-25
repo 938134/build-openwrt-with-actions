@@ -100,10 +100,11 @@ jobs:
       - name: 🏗️ 编译固件
         working-directory: source
         run: |
+          # 完全静默，只在错误时显示
           if [ "${{ inputs.multithreading }}" = "true" ]; then
-            make -j$(nproc) V=s
+            make -j$(nproc) V=0 || make -j1 V=s  # 失败时显示详细错误
           else
-            make -j1 V=s
+            make -j1 V=0 || make V=s
           fi
 
       - name: 📤 上传编译结果
