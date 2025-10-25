@@ -48,6 +48,8 @@ jobs:
 
       - name: 📥 克隆配置仓库
         uses: actions/checkout@v4
+        with:
+          path: config-repo
 
       - name: 📥 克隆 ImmortalWrt 源码
         uses: actions/checkout@v4
@@ -56,19 +58,43 @@ jobs:
           ref: ${{ inputs.branch }}
           path: source
 
-      - name: ⚙️ 复制所有配置文件
+      - name: 🔍 检查文件结构
         run: |
-          cp -f .config source/
-          cp -rf scripts/ source/scripts/
-          cp -rf beeconmini-seed-ac2/ source/beeconmini-seed-ac2/
+          echo "=== 配置仓库结构 ==="
+          find config-repo -type f -name "*.sh" -o -name "*.config" | sort
+          echo "=== 源码仓库结构 ==="
+          ls -la source/
+
+      - name: ⚙️ 复制配置文件到源码目录
+        run: |
+          # 复制配置文件
+          cp config-repo/.config source/
+          
+          # 复制脚本文件
+          cp -r config-repo/scripts source/
+          
+          # 复制设备文件
+          cp -r config-repo/beeconmini-seed-ac2 source/
+          
+          echo "复制完成，检查目标目录:"
+          ls -la source/scripts/
 
       - name: 📁 复制 files 目录
         if: ${{ inputs.upload_files }}
-        run: cp -rf files/ source/files/
+        run: |
+          if [ -d "config-repo/files" ]; then
+            cp -r config-repo/files source/
+            echo "✅ files 目录复制完成"
+          else
+            echo "⚠️  config-repo/files 目录不存在"
+          fi
 
       - name: 🛠️ 执行自定义配置
         working-directory: source
         run: |
+          echo "当前目录: $(pwd)"
+          echo "脚本文件:"
+          ls -la scripts/
           chmod +x scripts/diy.sh
           ./scripts/diy.sh
 
