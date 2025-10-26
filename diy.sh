@@ -21,7 +21,7 @@ if [ -d "../beeconmini-seed-ac2/patches" ]; then
         if [ -f "$patch" ]; then
             echo "应用补丁: $(basename "$patch")"
             # 使用 --forward 选项，如果补丁已应用则忽略，不视为错误
-            if patch -p1 --forward < "$patch" 2>/dev/null; then
+            if patch -p1 --forward --no-backup-if-mismatch < "$patch" 2>/dev/null; then
                 echo "✅ $(basename "$patch") 应用成功"
             else
                 echo "⚠️  $(basename "$patch") 可能已应用或存在冲突，继续执行"
@@ -39,12 +39,32 @@ echo "🎨 配置主题..."
 sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 echo "✅ 主题修改为 argon"
 
+# 生成默认配置
+echo "⚙️ 生成默认配置..."
+make defconfig
+
+# 应用 AC2 配置
+echo "🔧 应用 AC2 设备配置..."
+if [ -f "../beeconmini-seed-ac2/config.ac2" ]; then
+    cat ../beeconmini-seed-ac2/config.ac2 >> .config
+    echo "✅ AC2 配置已添加"
+    # 重新生成配置以确保一致性
+    make defconfig
+else
+    echo "❌ config.ac2 文件不存在于 ../beeconmini-seed-ac2/"
+    echo "当前目录结构:"
+    ls -la ../beeconmini-seed-ac2/
+    exit 1
+fi
+
 # 确保设备配置正确
 echo "🔧 检查设备配置..."
 if grep -q "CONFIG_TARGET_mediatek_filogic_DEVICE_beeconmini_seed-ac2=y" .config; then
     echo "✅ AC2 设备配置正确"
 else
-    echo "❌ AC2 设备配置缺失，请检查 config.ac2"
+    echo "❌ AC2 设备配置缺失"
+    echo "当前配置中相关的 AC2 配置:"
+    grep -i "beeconmini\|ac2" .config || echo "未找到相关配置"
     exit 1
 fi
 
