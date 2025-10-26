@@ -96,7 +96,7 @@ jobs:
         with:
           name: config-before-build
           path: |
-            source/config.ac2
+            source/.config
           retention-days: 1   
 
       - name: 🏗️ 编译固件
