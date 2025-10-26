@@ -112,5 +112,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: firmware-${{ github.sha }}
-          path: source/bin/targets
+          path: |
+            source/bin/targets
+            source/.config
           retention-days: 7
