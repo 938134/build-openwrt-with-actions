@@ -34,11 +34,6 @@ else
     exit 1
 fi
 
-# 配置主题（必须在 feeds 更新后）
-echo "🎨 配置主题..."
-sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
-echo "✅ 主题修改为 argon"
-
 # 生成默认配置
 echo "⚙️ 生成默认配置..."
 make defconfig
