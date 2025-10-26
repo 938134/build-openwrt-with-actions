@@ -60,7 +60,6 @@ jobs:
         run: |
           # 复制设备定义和配置文件
           cp -rf beeconmini-seed-ac2/* source/
-          cp config.ac2 source/
           echo "✅ AC2 专用文件复制完成"
 
       - name: 🛠️ 执行自定义配置
