@@ -46,38 +46,49 @@ jobs:
             ack autoconf automake bison flex libtool pkg-config scons \
             gawk gettext gperf help2man intltool zlib1g-dev
 
-      - name: 📥 克隆配置仓库
+      - name: 📥 克隆当前仓库
         uses: actions/checkout@v4
 
-      - name: 📥 克隆 ImmortalWrt 源码
+      - name: 📥 克隆 ImmortalWrt 仓库
         uses: actions/checkout@v4
         with:
           repository: "${{ inputs.owner }}/${{ inputs.repo }}"
           ref: ${{ inputs.branch }}
           path: source
 
-      - name: ⚙️ 复制脚本和补丁
+      - name: ⚙️ 复制脚本、补丁和配置文件
         run: |
           # 复制设备定义和配置文件
           cp -f diy.sh source/
           cp -rf beeconmini-seed-ac2/* source/
-          echo "✅ 文件复制完成"
+          echo "✅ 基础文件复制完成"
+            
+          # 复制 files 大法目录（如果存在且需要）
+          if [ -d "files" ] && ${{ inputs.include_files }}; then
+            cp -rf files source/
+            echo "✅ files 大法目录复制完成"
+          else
+            echo "⚠️  files 目录不存在或未启用 include_files，跳过"
+          fi
 
-      - name: 🛠️ 执行自定义配置
+      - name: 🛠️ 执行自定义配置，更新源码，打补丁；
         working-directory: source
         run: |
           chmod +x diy.sh
           ./diy.sh
-
-      - name: 📁 复制 files 大法目录
-        if: ${{ inputs.include_files }}
-        run: |
-          if [ -d "files" ]; then
-            cp -rf files source/
-            echo "✅ files 大法目录复制完成"
-          else
-            echo "⚠️  files 目录不存在，跳过"
-          fi
+          - name: 🔍 SSH 调试会话
+          if: ${{ inputs.ssh }}
+          uses: csexton/debugger-action@master
+  
+      - name: 📤 上传编译前配置
+        if: ${{ inputs.multithreading == true }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: config-before-build
+          path: |
+            source/.config
+            source/feeds.conf.default
+          retention-days: 1   
 
       - name: ⚙️ 配置编译选项
         working-directory: source
@@ -90,23 +101,10 @@ jobs:
           make olddefconfig
           echo "✅ 编译配置完成"
 
-      - name: 🔍 SSH 调试会话
-        if: ${{ inputs.ssh }}
-        uses: csexton/debugger-action@master
-
-      - name: ⬇️ 下载源码包
-        working-directory: source
-        run: make download -j$(nproc)
-
       - name: 🏗️ 编译固件
+        if: ${{inputs.multithreading == true}}
         working-directory: source
-        run: |
-          # 完全静默，只在错误时显示
-          if [ "${{ inputs.multithreading }}" = "true" ]; then
-            make -j$(nproc) V=0 || make -j1 V=s  # 失败时显示详细错误
-          else
-            make -j1 V=0 || make V=s
-          fi
+        run: make -j$(nproc) V=0 || make -j1 V=s 
 
       - name: 📤 上传编译结果
         uses: actions/upload-artifact@v4
@@ -114,5 +112,3 @@ jobs:
           name: firmware-${{ github.sha }}
           path: |
             source/bin/targets
-            source/.config
-          retention-days: 7
