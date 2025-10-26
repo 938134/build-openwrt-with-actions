@@ -1,0 +1,24 @@
+From: BeeconMini AC2 Support <support@beeconmini.com>
+Date: Mon, 1 Jan 2024 00:00:00 +0800
+Subject: [PATCH] add beeconmini seed ac2 platform support
+
+Add upgrade and configuration support for BeeconMini SEED AC2 device.
+
+--- a/target/linux/mediatek/filogic/base-files/lib/upgrade/platform.sh
++++ b/target/linux/mediatek/filogic/base-files/lib/upgrade/platform.sh
+@@ -82,6 +82,7 @@ platform_do_upgrade() {
+ 	glinet,gl-mt6000|\
+ 	glinet,gl-x3000|\
+ 	glinet,gl-xe3000|\
++	beeconmini,seed-ac2|\
+ 	huasifei,wh3000-emmc|\
+ 	huasifei,wh3000-pro|\
+ 	smartrg,sdg-8612|\
+@@ -177,6 +178,7 @@ platform_copy_config() {
+ 	glinet,gl-mt2500|\
+ 	glinet,gl-mt6000|\
+ 	glinet,gl-x3000|\
++	beeconmini,seed-ac2|\
+ 	glinet,gl-xe3000|\
+ 	huasifei,wh3000-emmc|\
+ 	huasifei,wh3000-pro|\

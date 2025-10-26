@@ -15,7 +15,7 @@ Add network interface and MAC address configuration for BeeconMini SEED AC2 devi
 +	beeconmini,seed-ac2)
  		ucidef_set_interfaces_lan_wan eth0 eth1
  		;;
- 	bananapi,bpi-r4)
+ 	bananapi,bpi-r4
 @@ -213,6 +216,10 @@ mediatek_setup_macs()
  	yuncore,ax835)
  		label_mac=$(mtd_get_mac_binary "Factory" 0x4)

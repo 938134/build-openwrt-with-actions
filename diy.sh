@@ -33,7 +33,7 @@ if [ -d "../beeconmini-seed-ac2/patches" ]; then
         if [ -f "$patch" ]; then
             echo "应用补丁: $(basename "$patch")"
             # 使用 --forward 选项，如果补丁已应用则忽略，不视为错误
-            if patch -p1 --forward --no-backup-if-mismatch < "$patch" 2>/dev/null; then
+            if patch -p1 --forward --no-backup-if-mismatch --fuzz=10 < "$patch" 2>/dev/null; then
                 echo "✅ $(basename "$patch") 应用成功"
             else
                 echo "⚠️  $(basename "$patch") 可能已应用或存在冲突，继续执行"
