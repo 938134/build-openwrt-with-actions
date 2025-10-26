@@ -6,7 +6,7 @@ Add device definition for BeeconMini SEED AC2.
 
 --- a/target/linux/mediatek/image/filogic.mk
 +++ b/target/linux/mediatek/image/filogic.mk
-@@ -270,6 +270,20 @@ endif
+@@ -270,6 +270,16 @@ endif
  endef
  TARGET_DEVICES += bananapi_bpi-r3
  
@@ -19,8 +19,6 @@ Add device definition for BeeconMini SEED AC2.
 +	kmod-switch-rtl8373 kmod-mt7915e kmod-mt7981-firmware \
 +	mt7981-wo-firmware automount
 +  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
-+  SUPPORTED_DEVICES += beeconmini,seed-ac2
-+  DEVICE_COMPAT_VERSION := 1.0
 +endef
 +TARGET_DEVICES += beeconmini_seed-ac2
 +

@@ -1,29 +1,29 @@
+# 文件: 1001-add-beeconmini-seed-ac2-network-support-fixed.patch
 From: BeeconMini AC2 Support <support@beeconmini.com>
-Date: Mon, 1 Jan 2024 00:00:00 +0800
+Date: Mon, 01 Jan 2024 00:00:00 +0800
 Subject: [PATCH] add beeconmini seed ac2 network support
-
-Add network interface and MAC address configuration for BeeconMini SEED AC2 device.
 
 --- a/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
 +++ b/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
-@@ -63,6 +63,9 @@ mediatek_setup_interfaces()
+@@ -45,6 +45,9 @@ mediatek_setup_interfaces()
  	bananapi,bpi-r3-mini|\
  	edgecore,eap111|\
  	huasifei,wh3000-emmc|\
 -	huasifei,wh3000-pro)
 +	huasifei,wh3000-pro|\
-+	beeconmini,seed-ac2)
++	beeconmini,seed-ac2|\
++	beeconmini,seed-ac3)
  		ucidef_set_interfaces_lan_wan eth0 eth1
  		;;
- 	bananapi,bpi-r4
-@@ -213,6 +216,10 @@ mediatek_setup_macs()
- 	yuncore,ax835)
- 		label_mac=$(mtd_get_mac_binary "Factory" 0x4)
+ 	bananapi,bpi-r4|\
+@@ -138,6 +141,11 @@ mediatek_setup_macs()
+ 		wan_mac=$(macaddr_add $(cat /sys/class/net/eth0/address) 1)
  		;;
-+	beeconmini,seed-ac2)
++	beeconmini,seed-ac2|\
++	beeconmini,seed-ac3)
 +		lan_mac=$(mtd_get_mac_binary "art" 0x0)
 +		wan_mac=$(macaddr_add "$lan_mac" 1)
 +		;;
- 	esac
- 
- 	[ -n "$lan_mac" ] && ucidef_set_interface_macaddr "lan" $lan_mac
+ 	h3c,magic-nx30-pro|\
+ 	h3c,magic-nx30-pro-nmbm)
+ 		wan_mac=$(mtd_get_mac_ascii pdt_data_1 ethaddr)
