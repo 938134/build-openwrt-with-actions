@@ -56,21 +56,18 @@ jobs:
           ref: ${{ inputs.branch }}
           path: source
 
-      - name: ⚙️ 复制脚本、补丁和
+      - name: ⚙️ 复制脚本、补丁和配置文件
         run: |
           # 复制设备定义和配置文件
           cp -f diy.sh source/
           cp -rf beeconmini-seed-ac2/* source/
           echo "✅ 基础文件复制完成"
-
-      - name: 📁 复制配置文件 files 大法目录
-        if: ${{ inputs.include_files }}
-        run: |
-          if [ -d "files" ]; then
+          # 复制 files 大法目录（如果存在且需要）
+          if [ -d "files" ] && ${{ inputs.include_files }}; then
             cp -rf files source/
             echo "✅ files 大法目录复制完成"
           else
-            echo "⚠️  files 目录不存在，跳过"
+            echo "⚠️  files 目录不存在或未启用 include_files，跳过"
           fi
 
       - name: 🛠️ 执行自定义配置
@@ -78,17 +75,6 @@ jobs:
         run: |
           chmod +x diy.sh
           ./diy.sh
-
-      - name: ⚙️ 配置编译选项
-        working-directory: source
-        run: |
-          # 首先生成默认配置
-          make defconfig
-          # 然后追加 AC2 专用配置
-          cat config.ac2 >> .config
-          # 确保配置一致
-          make olddefconfig
-          echo "✅ 编译配置完成"
 
       - name: 🔍 SSH 调试会话
         if: ${{ inputs.ssh }}
@@ -103,6 +89,17 @@ jobs:
             source/.config
             source/feeds.conf.default
           retention-days: 1   
+          
+      - name: ⚙️ 配置编译选项
+        working-directory: source
+        run: |
+          # 首先生成默认配置
+          make defconfig
+          # 然后追加 AC2 专用配置
+          cat config.ac2 >> .config
+          # 确保配置一致
+          make olddefconfig
+          echo "✅ 编译配置完成"
 
       - name: 🏗️ 编译固件
         working-directory: source

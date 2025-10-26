@@ -1,8 +1,12 @@
 #!/bin/bash
 
 set -e
-
 echo "=== 开始自定义配置 ==="
+
+# 更新 feeds（必须在操作 feeds 文件前）
+echo "📚 更新软件源..."
+./scripts/feeds update -a
+./scripts/feeds install -a
 
 # 基础配置
 sed -i 's/192.168.1.1/192.168.9.1/g' package/base-files/files/bin/config_generate
@@ -20,10 +24,7 @@ sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/M
 #git clone https://github.com/SunBK201/UA3F.git package/UA3F
 #git clone https://github.com/stevenjoezhang/luci-app-adguardhome.git package/ADGH
 
-# 更新 feeds（必须在操作 feeds 文件前）
-echo "📚 更新软件源..."
-./scripts/feeds update -a
-./scripts/feeds install -a
+
 
 # 应用 AC2 设备支持补丁
 echo "🔧 应用 BeeconMini SEED AC2 设备支持补丁..."
