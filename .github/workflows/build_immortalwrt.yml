@@ -76,6 +76,17 @@ jobs:
           chmod +x diy.sh
           ./diy.sh
 
+      - name: ⚙️ 配置编译选项
+        working-directory: source
+        run: |
+            # 首先生成默认配置
+            make defconfig
+            # 然后追加 AC2 专用配置
+            # cat config.ac2 >> .config
+            # 确保配置一致
+            # make olddefconfig
+            echo "✅ 编译配置完成"
+
       - name: 🔍 SSH 调试会话
         if: ${{ inputs.ssh }}
         uses: csexton/debugger-action@master
@@ -89,17 +100,6 @@ jobs:
             source/.config
             source/feeds.conf.default
           retention-days: 1   
-          
-      - name: ⚙️ 配置编译选项
-        working-directory: source
-        run: |
-          # 首先生成默认配置
-          make defconfig
-          # 然后追加 AC2 专用配置
-          cat config.ac2 >> .config
-          # 确保配置一致
-          make olddefconfig
-          echo "✅ 编译配置完成"
 
       - name: 🏗️ 编译固件
         working-directory: source
