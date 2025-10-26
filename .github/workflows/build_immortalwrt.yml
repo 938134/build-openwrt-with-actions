@@ -56,11 +56,12 @@ jobs:
           ref: ${{ inputs.branch }}
           path: source
 
-      - name: ⚙️ 复制 AC2 专用文件
+      - name: ⚙️ 复制脚本和补丁
         run: |
           # 复制设备定义和配置文件
+          cp -f diy.sh source/
           cp -rf beeconmini-seed-ac2/* source/
-          echo "✅ AC2 专用文件复制完成"
+          echo "✅ 文件复制完成"
 
       - name: 🛠️ 执行自定义配置
         working-directory: source
