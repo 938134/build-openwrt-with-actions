@@ -81,6 +81,7 @@ jobs:
         run: |
             # 首先生成默认配置
             make defconfig
+            cp .config config-ac2
             # 然后追加 AC2 专用配置
             # cat config.ac2 >> .config
             # 确保配置一致
@@ -92,13 +93,11 @@ jobs:
         uses: csexton/debugger-action@master
 
       - name: 📤 上传编译前配置
-        if: ${{ inputs.multithreading == true }}
         uses: actions/upload-artifact@v4
         with:
           name: config-before-build
           path: |
-            source/.config
-            source/feeds.conf.default
+            source/config.ac2
           retention-days: 1   
 
       - name: 🏗️ 编译固件
