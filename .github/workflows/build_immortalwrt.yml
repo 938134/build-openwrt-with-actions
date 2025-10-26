@@ -81,7 +81,6 @@ jobs:
         run: |
             # 首先生成默认配置
             make defconfig
-            cp .config config-ac2
             # 然后追加 AC2 专用配置
             # cat config.ac2 >> .config
             # 确保配置一致
