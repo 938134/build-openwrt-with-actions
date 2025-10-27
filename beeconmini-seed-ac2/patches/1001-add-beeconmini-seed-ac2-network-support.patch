@@ -5,25 +5,22 @@ Subject: [PATCH] add beeconmini seed ac2 network support
 
 --- a/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
 +++ b/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
-@@ -45,6 +45,9 @@ mediatek_setup_interfaces()
+@@ -90,7 +90,8 @@
  	bananapi,bpi-r3-mini|\
  	edgecore,eap111|\
  	huasifei,wh3000-emmc|\
 -	huasifei,wh3000-pro)
 +	huasifei,wh3000-pro|\
-+	beeconmini,seed-ac2|\
-+	beeconmini,seed-ac3)
++	beeconmini,seed-ac2)
  		ucidef_set_interfaces_lan_wan eth0 eth1
  		;;
  	bananapi,bpi-r4|\
-@@ -138,6 +141,11 @@ mediatek_setup_macs()
- 		wan_mac=$(macaddr_add $(cat /sys/class/net/eth0/address) 1)
+@@ -258,4 +258,8 @@
+ 	yuncore,ax835)
+ 		label_mac=$(mtd_get_mac_binary "Factory" 0x4)
  		;;
-+	beeconmini,seed-ac2|\
-+	beeconmini,seed-ac3)
++	beeconmini,seed-ac2)
 +		lan_mac=$(mtd_get_mac_binary "art" 0x0)
 +		wan_mac=$(macaddr_add "$lan_mac" 1)
 +		;;
- 	h3c,magic-nx30-pro|\
- 	h3c,magic-nx30-pro-nmbm)
- 		wan_mac=$(mtd_get_mac_ascii pdt_data_1 ethaddr)
+ 	esac
