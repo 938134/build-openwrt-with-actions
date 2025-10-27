@@ -80,7 +80,7 @@ jobs:
         working-directory: source
         run: |
             # 首先生成默认配置
-            cp config.ac2 >> .config
+            cp config.ac2 .config
             make defconfig
             echo "✅ 编译配置完成"
 
