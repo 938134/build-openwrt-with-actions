@@ -97,9 +97,6 @@ jobs:
           name: config-before-build
           path: |
             source/ac2.config
-            source/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
-            source/target/linux/mediatek/filogic/base-files/lib/upgrade/platform.sh
-            source/target/linux/mediatek/image/filogic.mk
           retention-days: 1   
 
       - name: 🏗️ 编译固件
