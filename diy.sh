@@ -11,8 +11,8 @@ set -e
 #git clone https://github.com/SunBK201/UA3F.git package/UA3F
 # 更新 feeds（必须在操作 feeds 文件前）
 # 🎯 关键步骤：添加和配置 iStore
-echo "📚 添加 iStore 软件源..."
-echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
+#echo "📚 添加 iStore 软件源..."
+#echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
 
 echo "📚 更新所有软件源..."
 ./scripts/feeds update -a
@@ -20,8 +20,8 @@ echo "📚 更新所有软件源..."
 echo "📚 安装所有软件包..."
 ./scripts/feeds install -a
 
-echo "📚 确保 iStore 应用商店已安装..."
-./scripts/feeds install -d y -p istore luci-app-store
+#echo "📚 确保 iStore 应用商店已安装..."
+#./scripts/feeds install -d y -p istore luci-app-store
 
 echo "=== 开始自定义配置 ==="
 # 基础配置
