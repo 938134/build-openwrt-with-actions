@@ -96,7 +96,7 @@ jobs:
         with:
           name: config-before-build
           path: |
-            source/.config
+            source/ac2.config
             source/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
             source/target/linux/mediatek/filogic/base-files/lib/upgrade/platform.sh
             source/target/linux/mediatek/image/filogic.mk
