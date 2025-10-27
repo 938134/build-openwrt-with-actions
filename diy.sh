@@ -22,9 +22,11 @@ sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/M
 #git clone https://github.com/kenzok8/openwrt-packages.git package/openwrt-packages
 #git clone https://github.com/kenzok8/small.git package/small
 #git clone https://github.com/SunBK201/UA3F.git package/UA3F
-#git clone https://github.com/stevenjoezhang/luci-app-adguardhome.git package/ADGH
-
-
+git clone https://github.com/stevenjoezhang/luci-app-adguardhome.git package/ADGH
+git clone https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon
+git clone https://github.com/jerrykuku/luci-app-argon-config.git package/luci-app-argon-config
+git clone https://github.com/linkease/luci-app-store.git package/luci-app-store
+git clone https://github.com/stevenjoezhang/luci-app-adguardhome.git package/luci-app-adguardhome
 
 # 应用 AC2 设备支持补丁
 echo "🔧 应用 BeeconMini SEED AC2 设备支持补丁..."
