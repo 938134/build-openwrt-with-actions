@@ -6,10 +6,10 @@ Add device definition for BeeconMini SEED AC2.
 
 --- a/target/linux/mediatek/image/filogic.mk
 +++ b/target/linux/mediatek/image/filogic.mk
-@@ -123,3 +123,13 @@
- 
+@@ -255,6 +255,16 @@
  endef
-+
+ TARGET_DEVICES += smartrg_sdg-8612
+ 
 +define Device/beeconmini_seed-ac2
 +  DEVICE_VENDOR := BeeconMini
 +  DEVICE_MODEL := SEED AC2
@@ -20,4 +20,6 @@ Add device definition for BeeconMini SEED AC2.
 +endef
 +TARGET_DEVICES += beeconmini_seed-ac2
 +
- define Device/abt_asr3000
+ define Device/smartrg_sdg-8614
+ $(call Device/adtran_smartrg)
+   DEVICE_MODEL := SDG-8614
