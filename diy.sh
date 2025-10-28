@@ -3,12 +3,11 @@
 set -e
 
 # 添加额外的软件包，echo 方式和git clone 方式二选一即可
-#echo 'src-git kenzok8 https://github.com/kenzok8/openwrt-packages' >>feeds.conf.default
-#echo 'src-git small https://github.com/kenzok8/small' >>feeds.conf.default
-#echo 'src-git UA3F https://github.com/SunBK201/UA3F.git' >>feeds.conf.default
-#git clone https://github.com/kenzok8/openwrt-packages.git package/openwrt-packages
-#git clone https://github.com/kenzok8/small.git package/small
-#git clone https://github.com/SunBK201/UA3F.git package/UA3F
+# src-include defaults feeds.conf.default
+src-git third_party https://github.com/linkease/istore-packages.git;main
+src-git oaf https://github.com/jjm2473/OpenAppFilter.git;dev4
+src-git linkease_nas https://github.com/linkease/nas-packages.git;master
+src-git linkease_nas_luci https://github.com/linkease/nas-packages-luci.git;main
 # 更新 feeds（必须在操作 feeds 文件前）
 # 🎯 关键步骤：添加和配置 iStore
 #echo "📚 添加 iStore 软件源..."
