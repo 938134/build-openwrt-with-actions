@@ -106,10 +106,14 @@ jobs:
             make -j1 V=0 || make V=s
           fi
 
+      - name: 🔧 设置时间变量
+        id: datetime
+        run: echo "timestamp=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+      
       - name: 📤 上传编译结果
         uses: actions/upload-artifact@v4
         with:
-          name: firmware-${{ github.sha }}
+          name: beeconmini-seed-ac2-${{ steps.datetime.outputs.timestamp }}
           path: |
             source/bin/targets
           retention-days: 7
