@@ -36,12 +36,14 @@ jobs:
     runs-on: ubuntu-latest
     name: 🚀 编译固件
     
+    # 高高兴兴定义变量 🎉
     env:
       DEVICE_NAME: "beeconmini-seed-ac2"
       DEVICE_CONFIG: "ac2.config"
       BUILD_DIR: "source"
       ARTIFACT_RETENTION_DAYS: 7
-      TIMESTAMP_FORMAT: "%Y%m%d-%H%M%S"
+      CONFIG_RETENTION_DAYS: 1
+      TARGET_PATH: "bin/targets"
     
     steps:
       - name: 📦 安装编译依赖
@@ -91,10 +93,10 @@ jobs:
       - name: ⚙️ 配置编译选项
         working-directory: ${{ env.BUILD_DIR }}
         run: |
-            # 首先生成默认配置
-            cp ${{ env.DEVICE_CONFIG }} .config
-            make defconfig
-            echo "✅ 编译配置完成"
+          # 首先生成默认配置
+          cp ${{ env.DEVICE_CONFIG }} .config
+          make defconfig
+          echo "✅ 编译配置完成"
         
       - name: 📤 上传编译前配置
         uses: actions/upload-artifact@v4
@@ -102,7 +104,7 @@ jobs:
           name: config
           path: |
             ${{ env.BUILD_DIR }}/${{ env.DEVICE_CONFIG }}
-          retention-days: 1         
+          retention-days: ${{ env.CONFIG_RETENTION_DAYS }}
 
       - name: 🏗️ 编译固件
         working-directory: ${{ env.BUILD_DIR }}
@@ -113,11 +115,15 @@ jobs:
           else
             make -j1 V=0 || make V=s
           fi
+
+      - name: 🔧 设置时间变量
+        id: datetime
+        run: echo "timestamp=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
       
       - name: 📤 上传编译结果
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.DEVICE_NAME }}-$(date +'${{ env.TIMESTAMP_FORMAT }}')
+          name: ${{ env.DEVICE_NAME }}-${{ steps.datetime.outputs.timestamp }}
           path: |
-            ${{ env.BUILD_DIR }}/bin/targets
+            ${{ env.BUILD_DIR }}/${{ env.TARGET_PATH }}
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
