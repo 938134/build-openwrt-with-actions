@@ -94,8 +94,7 @@ jobs:
         working-directory: ${{ env.BUILD_DIR }}
         run: |
           # 首先生成默认配置
-          cp ${{ env.DEVICE_CONFIG }} .config
-          #make target/linux/mediatek/mt7981/config
+          #cp ${{ env.DEVICE_CONFIG }} .config
           #make defconfig
           echo "✅ 编译配置完成"
         
