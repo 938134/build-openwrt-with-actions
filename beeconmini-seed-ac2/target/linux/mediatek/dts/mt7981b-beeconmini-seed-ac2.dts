@@ -1,72 +1,30 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/dts-v1/;
 
-#include "mt7981b.dtsi"
+/dts-v1/;
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+#include "mt7981.dtsi"
 
 / {
 	model = "BeeconMini SEED AC2";
 	compatible = "beeconmini,seed-ac2", "mediatek,mt7981";
 
+	aliases {
+		serial0 = &uart0;
+		led-boot = &led_sys;
+		led-failsafe = &led_sys;
+		led-running = &led_sys;
+		led-upgrade = &led_sys;
+	};
+
 	chosen {
-		bootargs = "console=ttyS0,115200n1 loglevel=8 earlycon=uart8250,mmio32,0x11002000";
+		stdout-path = "serial0:115200n8";
+		bootargs = "root=PARTLABEL=rootfs rootfstype=squashfs,f2fs rootwait fstools_partname_fallback_scan=1";
 	};
 
 	memory {
-		reg = <0 0x40000000 0 0x10000000>;
-	};
-
-	leds {
-		compatible = "gpio-leds";
-
-		led_system: system {
-			label = "blue:system";
-			gpios = <&pio 11 GPIO_ACTIVE_LOW>;
-			default-state = "on";
-		};
-
-		led_wan: wan {
-			label = "blue:wan";
-			gpios = <&pio 12 GPIO_ACTIVE_LOW>;
-		};
-
-		led_lan1: lan1 {
-			label = "blue:lan1";
-			gpios = <&pio 9 GPIO_ACTIVE_LOW>;
-		};
-
-		led_lan2: lan2 {
-			label = "blue:lan2";
-			gpios = <&pio 10 GPIO_ACTIVE_LOW>;
-		};
-				led_lan3: lan3 {
-			label = "blue:lan3";
-			gpios = <&pio 13 GPIO_ACTIVE_LOW>;
-		};
-
-		led_lan4: lan4 {
-			label = "blue:lan4";
-			gpios = <&pio 14 GPIO_ACTIVE_LOW>;
-		};
-
-		led_lan5: lan5 {
-			label = "blue:lan5";
-			gpios = <&pio 15 GPIO_ACTIVE_LOW>;
-		};
-
-		led_lan6: lan6 {
-			label = "blue:lan6";
-			gpios = <&pio 16 GPIO_ACTIVE_LOW>;
-		};
-
-		led_lan7: lan7 {
-			label = "blue:lan7";
-			gpios = <&pio 17 GPIO_ACTIVE_LOW>;
-		};
-
-		led_lan8: lan8 {
-			label = "blue:lan8";
-			gpios = <&pio 18 GPIO_ACTIVE_LOW>;
-		};
+		reg = <0 0x40000000 0 0x20000000>;
 	};
 
 	gpio-keys {
@@ -74,14 +32,185 @@
 
 		reset {
 			label = "reset";
-			gpios = <&pio 1 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
+			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_sys: led_sys {
+			label = "led_sys";
+			gpios = <&pio 4 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	rtl8373 {
+		compatible = "realtek,rtl8373";
+		mediatek,mdio = <&mdio_bus>;
+		mediatek,reset-pin = <&pio 1 GPIO_ACTIVE_HIGH>;
+		interrupt-parent = <&pio>;
+		interrupts = <6 IRQ_TYPE_LEVEL_LOW>;
+		status = "okay";
+	};
+
+	i2c_rtl8238b {
+		compatible = "i2c-gpio";
+		sda-gpios = <&pio 47 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&pio 46 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		i2c-gpio,delay-us = <2>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		rtl8238b: rtl8238b@20 {
+			compatible = "realtek,rtl8238b";
+			reg = <0x20>;
+		};
+	};
+};
+
+&sgmiisys0 {
+	/delete-property/ mediatek,pnswap;
+};
+
+&eth {
+	status = "okay";
+
+	gmac0: mac@0 {
+		compatible = "mediatek,eth-mac";
+		reg = <0>;
+		phy-mode = "2500base-x";
+
+		fixed-link {
+			speed = <2500>;
+			full-duplex;
+			pause;
+		};
+	};
+
+	gmac1: mac@1 {
+		compatible = "mediatek,eth-mac";
+		reg = <1>;
+		phy-mode = "2500base-x";
+		phy-handle = <&rtl8221b_phy>;
+	};
+
+	mdio-bus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		rtl8221b_phy: ethernet-phy@7 {
+			compatible = "ethernet-phy-ieee802.3-c45";
+			reg = <7>;
+			reset-gpios = <&pio 49 GPIO_ACTIVE_LOW>;
+			interrupt-parent = <&pio>;
+			interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
+			reset-assert-us = <100000>;
+			reset-deassert-us = <100000>;
+			realtek,led-link-select = <0x0 0x07 0x20>;
+		};
+	};
+};
+
+&mmc0 {
+	max-frequency = <26000000>;
+	no-sd;
+	no-sdio;
+	pinctrl-names = "default", "state_uhs";
+	pinctrl-0 = <&mmc0_pins_default>;
+	pinctrl-1 = <&mmc0_pins_uhs>;
+	vmmc-supply = <&reg_3p3v>;
+	non-removable;
+	status = "okay";
+	bus-width = <8>;
+};
+
+&spi1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spic_pins>;
+	status = "disabled";
+};
+
+&spi2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi2_flash_pins>;
+	status = "okay";
+
+	spi_nor@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <52000000>;
+		spi-tx-buswidth = <4>;
+		spi-rx-buswidth = <4>;
+
+		partition@00000 {
+			label = "BL2";
+			reg = <0x00000 0x0040000>;
 		};
 
-		wps {
-			label = "wps";
-			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_WPS_BUTTON>;
+		partition@40000 {
+			label = "u-boot-env";
+			reg = <0x40000 0x0010000>;
+		};
+
+		partition@50000 {
+			label = "Factory";
+			reg = <0x50000 0x00A0000>;
+		};
+
+		partition@F0000 {
+			label = "art";
+			reg = <0xF0000 0x0010000>;
+		};
+
+		partition@100000 {
+			label = "FIP";
+			reg = <0x100000 0x0200000>;
+		};
+	};
+};
+
+&pio {
+	spic_pins: spi1-pins {
+		mux {
+			function = "spi";
+			groups = "spi1_1";
+		};
+	};
+
+	spi2_flash_pins: spi2-pins {
+		mux {
+			function = "spi";
+			groups = "spi2", "spi2_wp_hold";
+		};
+
+		conf-pu {
+			pins = "SPI2_CS", "SPI2_HOLD", "SPI2_WP";
+			drive-strength = <MTK_DRIVE_8mA>;
+			bias-pull-up = <MTK_PUPD_SET_R1R0_11>;
+		};
+
+		conf-pd {
+			pins = "SPI2_CLK", "SPI2_MOSI", "SPI2_MISO";
+			drive-strength = <MTK_DRIVE_8mA>;
+			bias-pull-down = <MTK_PUPD_SET_R1R0_11>;
+		};
+	};
+
+	mmc0_pins_default: mmc0-pins-default {
+		mux {
+			function = "flash";
+			groups = "emmc_45";
+		};
+	};
+
+	mmc0_pins_uhs: mmc0-pins-uhs {
+		mux {
+			function = "flash";
+			groups = "emmc_45";
 		};
 	};
 };
@@ -92,153 +221,4 @@
 
 &watchdog {
 	status = "okay";
-};
-
-&eth {
-	status = "okay";
-
-	gmac0: mac@0 {
-		compatible = "mediatek,eth-mac";
-		reg = <0>;
-		phy-mode = "2500base-x";
-		phy-handle = <&phy0>;
-	};
-
-	gmac1: mac@1 {
-		compatible = "mediatek,eth-mac";
-		reg = <1>;
-		phy-mode = "2500base-x";
-		phy-handle = <&phy1>;
-	};
-};
-
-&mdio_bus {
-	phy0: ethernet-phy@0 {
-		reg = <0>;
-		compatible = "ethernet-phy-ieee802.3-c22";
-	};
-
-	phy1: ethernet-phy@1 {
-		reg = <1>;
-		compatible = "ethernet-phy-ieee802.3-c22";
-	};
-
-	switch: switch@1f {
-		compatible = "realtek,rtl8373";
-		reg = <0x1f>;
-		reset-gpios = <&pio 5 GPIO_ACTIVE_LOW>;
-
-		ports {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			port@0 {
-				reg = <0>;
-				label = "lan1";
-			};
-
-			port@1 {
-				reg = <1>;
-				label = "lan2";
-			};
-
-			port@2 {
-				reg = <2>;
-				label = "lan3";
-			};
-
-			port@3 {
-				reg = <3>;
-				label = "lan4";
-			};
-
-			port@4 {
-				reg = <4>;
-				label = "lan5";
-			};
-
-			port@5 {
-				reg = <5>;
-				label = "lan6";
-			};
-
-			port@6 {
-				reg = <6>;
-				label = "lan7";
-			};
-
-			port@7 {
-				reg = <7>;
-				label = "lan8";
-			};
-
-			port@8 {
-				reg = <8>;
-				label = "cpu";
-				ethernet = <&gmac0>;
-				phy-mode = "rgmii";
-
-				fixed-link {
-					speed = <2500>;
-					full-duplex;
-					pause;
-				};
-			};
-		};
-	};
-};
-
-&switch {
-	status = "okay";
-};
-
-&spi0 {
-	status = "okay";
-
-	flash@0 {
-		compatible = "jedec,spi-nor";
-		reg = <0>;
-		spi-max-frequency = <50000000>;
-
-		partitions {
-			compatible = "fixed-partitions";
-			#address-cells = <1>;
-			#size-cells = <1>;
-
-			partition@0 {
-				label = "bl2";
-				reg = <0x00000 0x40000>;
-				read-only;
-			};
-
-			partition@40000 {
-				label = "u-boot-env";
-				reg = <0x40000 0x10000>;
-			};
-
-			factory: partition@50000 {
-				label = "factory";
-				reg = <0x50000 0x40000>;
-				read-only;
-			};
-
-			partition@90000 {
-				label = "fip";
-				reg = <0x90000 0x80000>;
-				read-only;
-			};
-
-			partition@110000 {
-				compatible = "denx,uimage";
-				label = "firmware";
-				reg = <0x110000 0xef0000>;
-			};
-		};
-	};
-};
-
-&wifi {
-	status = "okay";
-
-	mediatek,mtd-eeprom = <&factory 0x0>;
 };
