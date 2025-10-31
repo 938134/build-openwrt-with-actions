@@ -7,7 +7,7 @@ on:
         description: "仓库拥有者"
         type: string
         required: true
-        default: "immortalwrt"
+        default: "BeeconMini"
       repo:
         description: "仓库名称"
         type: string
@@ -17,7 +17,7 @@ on:
         description: "分支"
         type: string
         required: true
-        default: "openwrt-24.10"
+        default: "default"
       ssh:
         description: "SSH 调试"
         type: boolean
