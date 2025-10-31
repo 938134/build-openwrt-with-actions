@@ -90,7 +90,7 @@ jobs:
         run: |
           # 首先生成默认配置
           cp ${{ env.DEVICE_CONFIG }} .config
-          #make defconfig
+          make defconfig
           echo "✅ 编译配置完成"
         
       - name: 📤 上传编译前配置
