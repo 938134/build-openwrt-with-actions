@@ -105,7 +105,7 @@ jobs:
         working-directory: ${{ env.BUILD_DIR }}
         run: |
           make download -j$(nproc)
-          make -j$(nproc) || make -j1 V=s
+          make -j$(nproc) || make -j1 V=0
           
       - name: 🔧 设置时间变量
         id: datetime
