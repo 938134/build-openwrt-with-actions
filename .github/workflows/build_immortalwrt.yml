@@ -18,10 +18,6 @@ on:
         type: string
         required: true
         default: "openwrt-24.10"
-      multithreading:
-        description: "多线程编译"
-        type: boolean
-        default: true
       ssh:
         description: "SSH 调试"
         type: boolean
@@ -108,13 +104,9 @@ jobs:
       - name: 🏗️ 编译固件
         working-directory: ${{ env.BUILD_DIR }}
         run: |
-          # 完全静默，只在错误时显示
-          if [ "${{ inputs.multithreading }}" = "true" ]; then
-            make -j$(nproc) V=0 || make -j1 V=s  # 失败时显示详细错误
-          else
-            make -j1 V=0 || make V=s
-          fi
-
+          make download -j$(nproc)
+          make -j$(nproc) || make -j1 V=s
+          
       - name: 🔧 设置时间变量
         id: datetime
         run: echo "timestamp=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
