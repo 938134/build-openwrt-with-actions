@@ -42,6 +42,10 @@ jobs:
       TARGET_PATH: "bin/targets"
     
     steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /opt/hostedtoolcache /usr/local/lib/android || true
+      
       - name: 📦 安装编译依赖
         run: |
           sudo apt-get update
