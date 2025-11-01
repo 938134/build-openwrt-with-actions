@@ -50,6 +50,10 @@ jobs:
             gperf libncurses5-dev libssl-dev python3 rsync unzip wget \
             zlib1g-dev zstd lib32gcc-s1 libc6-dev-i386 subversion patch
 
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /opt/hostedtoolcache /usr/local/lib/android || true
+          
       - name: 📥 克隆当前仓库
         uses: actions/checkout@v4
 
@@ -59,10 +63,6 @@ jobs:
           repository: "${{ inputs.owner }}/${{ inputs.repo }}"
           ref: ${{ inputs.branch }}
           path: ${{ env.BUILD_DIR }}
-      
-      - name: Free disk space
-        run: |
-          sudo rm -rf /usr/share/dotnet /opt/ghc /opt/hostedtoolcache /usr/local/lib/android || true
 
       - name: ⚙️ 执行自定义配置
         working-directory: ${{ env.BUILD_DIR }}
